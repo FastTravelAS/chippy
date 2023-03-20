@@ -1,6 +1,7 @@
 require "logger"
 require "active_support/tagged_logging"
 require "active_support/isolated_execution_state"
+require "active_support/core_ext/integer"
 
 require_relative "chippy/logger_helper"
 require_relative "chippy/connection"
@@ -13,6 +14,9 @@ require_relative "chippy/message/header"
 require_relative "chippy/message_handler"
 require_relative "chippy/server"
 require_relative "chippy/version"
+
+# TODO: Remove
+require_relative "chippy/reading_job"
 
 module Chippy
   DEFAULT_PORT = 44999
