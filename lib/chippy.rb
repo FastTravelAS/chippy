@@ -4,6 +4,7 @@ require "active_support/isolated_execution_state"
 require "active_support/core_ext/integer"
 
 require_relative "chippy/logger_helper"
+require_relative "chippy/cli"
 require_relative "chippy/connection"
 require_relative "chippy/connection_status"
 require_relative "chippy/handshake"
@@ -12,6 +13,7 @@ require_relative "chippy/message"
 require_relative "chippy/message/body"
 require_relative "chippy/message/header"
 require_relative "chippy/message_handler"
+require_relative "chippy/redis_producer"
 require_relative "chippy/server"
 require_relative "chippy/version"
 
@@ -19,23 +21,36 @@ require_relative "chippy/version"
 require_relative "chippy/reading_job"
 
 module Chippy
-  DEFAULT_PORT = 44999
-  DEFAULT_CONCURRENCY = 10
-  DEFAULT_HOSTNAME = "0.0.0.0"
-
   class << self
     def start(options = {})
-      port = options.fetch(:port, ENV.fetch("CHIPPY_PORT", DEFAULT_PORT)).to_i
-      hostname = options.fetch(:hostname, ENV.fetch("CHIPPY_HOSTNAME", DEFAULT_HOSTNAME)).to_s
-      concurrency = options.fetch(:concurrency, ENV.fetch("CHIPPY_CONCURRENCY", DEFAULT_CONCURRENCY)).to_i
+      port, hostname, concurrency, redis_url, redis_list = options.values_at(:port, :hostname, :concurrency, :redis_url, :redis_list)
+
+      test_redis_connection(redis_url)
+
+      Chippy.setup_producer(redis_list, url: redis_url)
       Chippy::Server.new(port: port, hostname: hostname, concurrency: concurrency).run
     end
 
-    attr_accessor :logger
+    attr_writer :logger
+    attr_reader :producer
 
     def logger
       @logger ||= ActiveSupport::TaggedLogging.new(::Logger.new($stdout)).tap do |logger|
         logger.tagged("Chippy")
+      end
+    end
+
+    def setup_producer(list_name, redis_options = {})
+      @producer = RedisProducer.new(list_name, redis_options)
+    end
+
+    def test_redis_connection(redis_url)
+      redis_test = Redis.new(url: redis_url)
+      begin
+        redis_test.ping
+      rescue Redis::CannotConnectError
+        puts "Cannot connect to Redis at '#{redis_url}'. Please check your Redis connection string."
+        exit 1
       end
     end
   end

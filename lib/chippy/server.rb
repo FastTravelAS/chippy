@@ -4,10 +4,8 @@ module Chippy
   class Server
     include LoggerHelper
 
-    def initialize(port: DEFAULT_PORT, hostname: DEFAULT_HOSTNAME, concurrency: DEFAULT_CONCURRENCY)
-      @port = port
-      @hostname = hostname
-      @concurrency = concurrency
+    def initialize(options = {})
+      @port, @hostname, @concurrency = options.values_at(:port, :hostname, :concurrency)
       @threads = ThreadGroup.new
       @connections = {}
 
