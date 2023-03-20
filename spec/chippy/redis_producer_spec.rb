@@ -15,7 +15,7 @@ RSpec.describe Chippy::RedisProducer do
     it "pushes a message to the queue" do
       message = SecureRandom.hex(10)
       producer.push(message)
-      puts message
+
       expect(redis.lrange(queue_name, 0, -1)).to eq([message])
     end
   end

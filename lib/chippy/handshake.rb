@@ -2,10 +2,10 @@ module Chippy
   class Handshake
     include LoggerHelper
 
-    def initialize(connection, connections)
+    def initialize(connection, connections, handler: MessageHandler.new(connection))
       @connection = connection
       @connections = connections
-      @handler = MessageHandler.new(connection)
+      @handler = handler
     end
 
     attr_reader :connection, :connections, :handler

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Chippy::ConnectionStatus do
-  let(:connection_status) { Chippy::ConnectionStatus.new }
+  let(:connection_status) { described_class.new }
 
   describe "#connect" do
     it "sets the client_id and connected_at attributes" do

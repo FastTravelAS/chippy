@@ -14,7 +14,7 @@ RSpec.describe Chippy::LogWriter do
       allow(mock_logger).to receive(:tagged).with(tags).and_return(mock_logger)
       allow(mock_logger).to receive(:info).with(message)
 
-      Chippy::LogWriter.new(mock_logger).log(message, tags)
+      described_class.new(mock_logger).log(message, tags)
 
       expect(mock_logger).to have_received(:tagged).with(tags)
       expect(mock_logger).to have_received(:info).with(message)
@@ -28,7 +28,7 @@ RSpec.describe Chippy::LogWriter do
       allow(mock_logger).to receive(:tagged).with(tags).and_return(mock_logger)
       allow(mock_logger).to receive(:error).with(error)
 
-      Chippy::LogWriter.new(mock_logger).log_error(error, tags)
+      described_class.new(mock_logger).log_error(error, tags)
 
       expect(mock_logger).to have_received(:tagged).with(tags)
       expect(mock_logger).to have_received(:error).with(error)
