@@ -17,9 +17,6 @@ require_relative "chippy/redis_producer"
 require_relative "chippy/server"
 require_relative "chippy/version"
 
-# TODO: Remove
-require_relative "chippy/reading_job"
-
 module Chippy
   class << self
     def start(options = {})

@@ -8,6 +8,7 @@ module Chippy
     end
 
     def push(message)
+      message = message.to_json if message.is_a?(Hash)
       @redis.rpush(@list_name, message)
     end
   end
