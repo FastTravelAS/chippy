@@ -2,8 +2,9 @@ require "spec_helper"
 
 RSpec.describe Chippy::Server do
   let!(:concurrency) { 5 }
-  let!(:port) { 0 }
-  let!(:server) { Chippy::Server.new(port: port, concurrency: concurrency) }
+  let!(:port) { 50000 }
+  let!(:hostname) { "localhost" }
+  let!(:server) { described_class.new(port: port, hostname: hostname, concurrency: concurrency) }
   let(:connection) { instance_double(Chippy::Connection, client_id: "test_client_id") }
   let(:message_handler) { instance_double(Chippy::MessageHandler) }
   let(:handshake) { instance_double(Chippy::Handshake) }
@@ -98,7 +99,7 @@ RSpec.describe Chippy::Server do
 
     it "handles multiple messages in sequence" do
       # Set up your test server and connection
-      server = Chippy::Server.new(port: port, concurrency: 1)
+      server = described_class.new(port: port, concurrency: 1)
       connection = instance_double(Chippy::Connection)
       server.connections["test_client_id"] = Chippy::ConnectionStatus.new
 
@@ -144,7 +145,7 @@ RSpec.describe Chippy::Server do
 
       expect(server).to have_received(:trap_signals)
       expect(server).to have_received(:handle_exit)
-      expect(server).to have_received(:log).with("Started chip reader server on 0.0.0.0:#{port}")
+      expect(server).to have_received(:log).with("Started chip reader server on #{hostname}:#{port}")
       expect(server).to have_received(:spawn_thread).exactly(concurrency).times
       expect(server).to have_received(:sleep)
     end

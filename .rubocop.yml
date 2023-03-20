@@ -12,3 +12,12 @@ AllCops:
 
 RSpec:
   Enabled: true # enable rubocop-rspec cops
+
+RSpec/ExampleLength:
+  Max: 30
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 10

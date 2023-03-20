@@ -17,7 +17,13 @@ module Chippy
         data = message.body.to_s
         chip = data.match(CHIP_REGEXP)[1]
 
-        Chippy::ReadingJob.perform_async(connection.client_id.to_s, chip, message.created_at.to_f)
+        payload = {
+          chip: chip,
+          client_id: connection.client_id,
+          timestamp: message.created_at.to_f
+        }
+
+        Chippy.producer.push(payload)
       when :KEEP_ALIVE
         # Keep me alive
         keep_alive_message = Message.create([0x00, 0x00], type: :REQUEST)
