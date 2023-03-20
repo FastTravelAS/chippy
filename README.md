@@ -59,4 +59,4 @@ Options:
 * --redis-list: Set the Redis list name for the message broker (default: chippy:readings)
 
 ## Message Broker using Redis
-Chippy uses a message broker to handle communication between this service and the Flytaxi redis instance. The RedisProducer class is responsible for pushing messages to a Redis list. Chippy pushes messages to this list and the Rails application processes them accordingly.
+Chippy uses a message broker to handle communication between this service and the Flytaxi Rails application. The RedisProducer class is responsible for pushing messages to a Redis list. Chippy pushes messages to this list and the Rails application processes them accordingly.
