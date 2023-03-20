@@ -68,7 +68,7 @@ RSpec.describe Chippy::Message do
     end
   end
 
-  context "conversions" do
+  context "when doing conversions" do
     let(:message) { described_class.create([0, 0, 0, 1, 255]) }
 
     describe "#to_a" do
@@ -84,7 +84,7 @@ RSpec.describe Chippy::Message do
     end
   end
 
-  context "message methods" do
+  context "with message methods" do
     let!(:time) { Time.now }
     let(:message) { Timecop.freeze(time) { described_class.create(%w[02 00 17 01 01]) } }
 
@@ -131,7 +131,7 @@ RSpec.describe Chippy::Message do
     end
   end
 
-  context "message requests" do
+  context "with message requests" do
     describe ".create" do
       it "returns a message of type :REQUEST" do
         data = "0200"
@@ -148,7 +148,7 @@ RSpec.describe Chippy::Message do
     end
   end
 
-  context "message validation" do
+  context "when doing message validation" do
     let(:valid_message) { described_class.create(%w[02 00 17 01 01]) }
     let(:invalid_message) { described_class.create(%w[02 00 17 01 01 01]) }
     let(:not_ok_message) { described_class.create(%w[02 11 17 01]) }

@@ -22,7 +22,7 @@ RSpec.describe Chippy::Message::Body do
     end
   end
 
-  context "equality" do
+  context "when comparing equality" do
     describe "==(other)" do
       it "is true when two bodies with same data" do
         data = [1, 2, 3]

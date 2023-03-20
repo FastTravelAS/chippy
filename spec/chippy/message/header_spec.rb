@@ -57,7 +57,7 @@ RSpec.describe Chippy::Message::Header do
     end
   end
 
-  context "equality" do
+  context "when comparing equality" do
     describe "==(other)" do
       it "is true when two headers with same data" do
         data = [1, 2, 3, 4]
