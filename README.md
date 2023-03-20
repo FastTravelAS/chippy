@@ -1,5 +1,7 @@
 # Chippy
-![](chippy.png)
+![Chippy mascot](chippy.png)
+<small>Mascot created by Midjourney</small>
+
 Chippy is a standalone Ruby service designed to simplify the process of communicating with chip readers. It handles establishing connections, managing the handshake process, and efficiently processing incoming messages from multiple devices.
 
 ## Features
@@ -28,3 +30,4 @@ $ git clone https://github.com/rubynor/chippy.git
 ```bash
 $ cd chippy
 ```
+Todo: more to come
