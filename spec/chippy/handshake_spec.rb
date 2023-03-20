@@ -49,7 +49,7 @@ RSpec.describe Chippy::Handshake do
     let(:connections) { {"test_client_id" => connection_status} }
 
     context "and it's more than an hour old" do
-      let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 4.hours.ago, last_seen_at: 2.hours.ago ) }
+      let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 4.hours.ago, last_seen_at: 2.hours.ago) }
 
       it "performs a full handshake" do
         allow(connection_status).to receive(:connect).with("test_client_id").once
@@ -66,6 +66,7 @@ RSpec.describe Chippy::Handshake do
 
     context "and a client_id is not obtained" do
       let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 30.minutes.ago) }
+
       before { allow(connection).to receive(:client_id).and_return(nil) }
 
       it "raises an exception" do

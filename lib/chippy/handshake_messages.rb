@@ -14,7 +14,7 @@ module Chippy
           set_beacon_time.call, # Set beacon time ( host time )
           *define_applications, # Define applications
           set_extended # Set extended
-       ]
+        ]
       end
 
       def enable
