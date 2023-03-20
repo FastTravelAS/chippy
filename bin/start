@@ -4,5 +4,10 @@ require "bundler/setup"
 Bundler.require(:default)
 
 require_relative "../lib/chippy"
+require "sentry-ruby"
+
+Sentry.init do |config|
+  config.traces_sample_rate = 1.0
+end
 
 Chippy::CLI.run(ARGV)
