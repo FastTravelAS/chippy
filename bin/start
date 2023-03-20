@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "optparse"
+
+Bundler.require(:default)
+
+require_relative "../lib/chippy"
+
+options = {}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: start [options]"
+  opts.separator ""
+  opts.separator "Default options:"
+  opts.separator "  Port: #{Chippy::DEFAULT_PORT}"
+  opts.separator "  Hostname: #{Chippy::DEFAULT_HOSTNAME}"
+  opts.separator "  Concurrency: #{Chippy::DEFAULT_CONCURRENCY}"
+  opts.separator ""
+
+  opts.on("-pPORT", "--port=PORT", Integer, "Port to use (default: #{Chippy::DEFAULT_PORT})") do |port|
+    options[:port] = port
+  end
+
+  opts.on("-hHOSTNAME", "--hostname=HOSTNAME", String, "Hostname to use (default: #{Chippy::DEFAULT_HOSTNAME})") do |hostname|
+    options[:hostname] = hostname
+  end
+
+  opts.on("-cCONCURRENCY", "--concurrency=CONCURRENCY", Integer, "Concurrency (default: #{Chippy::DEFAULT_CONCURRENCY})") do |concurrency|
+    options[:concurrency] = concurrency
+  end
+end
+
+begin
+  parser.parse!
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts parser
+  exit
+end
+
+Chippy.start(options)

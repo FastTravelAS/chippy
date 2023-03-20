@@ -1,5 +1,7 @@
 require "logger"
 require "active_support/tagged_logging"
+require "active_support/isolated_execution_state"
+
 require_relative "chippy/logger_helper"
 require_relative "chippy/connection"
 require_relative "chippy/connection_status"
@@ -12,18 +14,25 @@ require_relative "chippy/message_handler"
 require_relative "chippy/server"
 require_relative "chippy/version"
 
-module ChipReaders
+module Chippy
+  DEFAULT_PORT = 44999
+  DEFAULT_CONCURRENCY = 10
+  DEFAULT_HOSTNAME = "0.0.0.0"
+
   class << self
-    def start
-      port = ENV.fetch("CHIP_READER_PORT", 3004)
-      ChipReaders::Server.new(port).run
+    def start(options = {})
+      port = options.fetch(:port, ENV.fetch("CHIPPY_PORT", DEFAULT_PORT)).to_i
+      hostname = options.fetch(:hostname, ENV.fetch("CHIPPY_HOSTNAME", DEFAULT_HOSTNAME)).to_s
+      concurrency = options.fetch(:concurrency, ENV.fetch("CHIPPY_CONCURRENCY", DEFAULT_CONCURRENCY)).to_i
+      Chippy::Server.new(port: port, hostname: hostname, concurrency: concurrency).run
     end
 
-    attr_writer :logger
+    attr_accessor :logger
 
     def logger
-      @logger ||= ActiveSupport::TaggedLogging.new(::Logger.new($stdout))
-      @logger.tagged("Chippy")
+      @logger ||= ActiveSupport::TaggedLogging.new(::Logger.new($stdout)).tap do |logger|
+        logger.tagged("Chippy")
+      end
     end
   end
 

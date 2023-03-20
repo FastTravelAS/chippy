@@ -1,21 +1,25 @@
-# rubocop:disable Rails/Exit
-# rubocop:disable Rails/Delegate
+require "socket"
 
 module Chippy
   class Server
     include LoggerHelper
-    DEFAULT_CONCURRENCY = 10
-    DEFAULT_PORT = 4999
 
-    def initialize(port = DEFAULT_PORT, concurrency: DEFAULT_CONCURRENCY)
+    def initialize(port: DEFAULT_PORT, hostname: DEFAULT_HOSTNAME, concurrency: DEFAULT_CONCURRENCY)
       @port = port
-      @socket = TCPServer.new(port.to_s)
+      @hostname = hostname
       @concurrency = concurrency
       @threads = ThreadGroup.new
       @connections = {}
+
+      begin
+        @socket = TCPServer.new(hostname, port)
+      rescue Errno::EADDRINUSE
+        puts "Port #{port} is already in use. Please choose another port."
+        exit 1
+      end
     end
 
-    attr_reader :threads, :connections, :socket, :concurrency, :port
+    attr_reader :threads, :connections, :socket, :concurrency, :port, :hostname
 
     def trap_signals
       trap("INT") { raise Interrupt }
@@ -34,7 +38,7 @@ module Chippy
       trap_signals
       handle_exit
 
-      log "Started chip reader server on port #{port}"
+      log "Started chip reader server on #{hostname}:#{port}"
 
       Thread.abort_on_exception = true
 
@@ -103,6 +107,3 @@ module Chippy
     end
   end
 end
-
-# rubocop:enable Rails/Exit
-# rubocop:enable Rails/Delegate
