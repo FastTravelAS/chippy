@@ -16,3 +16,5 @@ group :development, :test do
   gem "rubocop-rake", "~> 0.6.0", require: false
   gem "timecop", "~> 0.9.6", require: false
 end
+
+gem "sentry-ruby", "~> 5.8"

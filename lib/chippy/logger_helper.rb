@@ -1,3 +1,5 @@
+require "sentry-ruby"
+
 module Chippy
   class LogWriter
     attr_reader :logger
