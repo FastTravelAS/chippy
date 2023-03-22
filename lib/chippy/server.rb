@@ -57,9 +57,14 @@ module Chippy
       Thread.new do
         loop do
           connection = Connection.new(socket.accept)
-          handshake = Handshake.new(connection, connections)
-          handshake.perform
-          handle_connection(connection)
+
+          begin
+            handshake = Handshake.new(connection, connections)
+            handshake.perform
+            handle_connection(connection)
+          rescue => e
+            handle_error(e, connection)
+          end
         end
       end
     end
@@ -74,34 +79,32 @@ module Chippy
           handler.handle(message)
           connections[connection.client_id].touch
         else
-          connection.close
           break
         end
         yield if block_given?
-      rescue => e
-        handle_error(e, connection)
-        break
       end
+    rescue => e
+      handle_error(e, connection)
     end
 
     private
 
     def handle_error(error, connection)
-      # TODO: Handle message status 19, and other non-exceptions
-      # Log the error and close the connection
-      case error
-      when Chippy::MessageError, Chippy::HandshakeError, EOFError, Errno::EPIPE, Errno::ECONNRESET
-        log_and_close_connection(error, connection)
-      when Chippy::DeviceError
-        log_and_close_connection(error, connection, close_connection: false)
-      else
-        log_and_close_connection(error, connection)
-      end
-    end
+      should_close_connection = false
 
-    def log_and_close_connection(error, connection, close_connection: true)
+      case error
+      when Chippy::MalformedMessageError
+        connection.discard_remaining_data(error.remaining_data_length) if error.remaining_data_length&.positive?
+      when EOFError, Errno::EPIPE, Errno::ECONNRESET
+        should_close_connection = true
+      else
+        # log_error(error, connection: connection, notify: true)
+      end
+
+      # TODO: Remove this when we're ready to go live. Keeping this for now to help with debugging.
       log_error(error, connection: connection, notify: true)
-      connection.close if close_connection
+
+      connection.close if should_close_connection
     end
   end
 end

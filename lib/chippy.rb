@@ -52,6 +52,15 @@ module Chippy
     end
   end
 
+  class MalformedMessageError < StandardError
+    attr_reader :remaining_data_length
+
+    def initialize(message = nil, remaining_data_length: nil)
+      super(message)
+      @remaining_data_length = remaining_data_length
+    end
+  end
+
   class MessageError < StandardError; end
 
   class DeviceError < StandardError; end

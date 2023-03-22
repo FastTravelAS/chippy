@@ -63,7 +63,6 @@ RSpec.describe Chippy::Server do
       server.handle_connection(connection)
 
       expect(connection).to have_received(:read)
-      expect(connection).to have_received(:close)
     end
 
     it "handles incoming messages" do
@@ -87,14 +86,13 @@ RSpec.describe Chippy::Server do
       expect(connection).to have_received(:close)
     end
 
-    it "logs and closes the connection on MessageError" do
+    it "logs on MessageError" do
       allow(connection).to receive(:read).and_raise(Chippy::MessageError)
       allow(server).to receive(:log_error)
 
       server.handle_connection(connection)
 
       expect(server).to have_received(:log_error)
-      expect(connection).to have_received(:close)
     end
 
     it "handles multiple messages in sequence" do
@@ -156,6 +154,23 @@ RSpec.describe Chippy::Server do
       server.run
 
       expect(server).to have_received(:exit).with(0)
+    end
+  end
+
+  describe "handling malformed messages" do
+    let(:socket) { instance_double(UNIXSocket) }
+    let(:connection) { Chippy::Connection.new(socket, "test_client_id") }
+
+    it "discards the correct number of bytes from the connection" do
+      # Mock the connection read method to raise Chippy::MessageError with the correct remaining_data_length
+      allow(connection).to receive(:read).and_raise(Chippy::MalformedMessageError.new(remaining_data_length: 7))
+
+      allow(socket).to receive(:read).with(7)
+
+      server.handle_connection(connection)
+
+      # Check that the read method has been called with the correct remaining data length
+      expect(socket).to have_received(:read).with(7)
     end
   end
 end
