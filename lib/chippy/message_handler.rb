@@ -1,9 +1,12 @@
 module Chippy
+  # MessageHandler is responsible for processing incoming messages
+  # from Chippy devices and taking appropriate actions based on the message type.
   class MessageHandler
     include LoggerHelper
     CHIP_REGEXP = /020201200e(.*)ffff00000000/
 
     attr_reader :connection
+
     def initialize(connection)
       @connection = connection
     end
@@ -14,29 +17,13 @@ module Chippy
 
       case name
       when :CONNECT_TRANSPONDER_REPORT
-        data = message.body.to_s
-        chip = data.match(CHIP_REGEXP)[1]
-
-        payload = {
-          chip: chip,
-          client_id: connection.client_id,
-          timestamp: message.created_at.to_f
-        }
-
-        Chippy.producer.push(payload)
+        handle_connect_transponder_report(message)
       when :KEEP_ALIVE
-        # Keep me alive
-        keep_alive_message = Message.create([0x00, 0x00], type: :REQUEST)
-        connection.request(keep_alive_message)
-      # when :GET_OPERATIONAL_MODE # TODO: Implement this
+        handle_keep_alive(message)
       when :GET_STATUS
-        data = message.body.to_a
-        handle_get_status_response(data)
+        handle_get_status(message)
       when :GET_DSRC_CONFIGURATION
-        data = message.body.to_a
-        client_id = data[1..2]
-        client_id = client_id.map { |b| b.to_s(16) }.join.hex
-        connection.client_id = client_id
+        handle_get_dsrc_configuration(message)
       end
     end
 
@@ -44,6 +31,36 @@ module Chippy
 
     def log_message(message)
       log(message, connection: connection, direction: :in)
+    end
+
+    def handle_connect_transponder_report(message)
+      data = message.body.to_s
+      chip = data.match(CHIP_REGEXP)[1]
+
+      payload = {
+        chip: chip,
+        client_id: connection.client_id,
+        timestamp: message.created_at.to_f
+      }
+
+      Chippy.producer.push(payload)
+    end
+
+    def handle_keep_alive(message)
+      keep_alive_message = Message.create([0x00, 0x00], type: :REQUEST)
+      connection.request(keep_alive_message)
+    end
+
+    def handle_get_status(message)
+      data = message.body.to_a
+      handle_get_status_response(data)
+    end
+
+    def handle_get_dsrc_configuration(message)
+      data = message.body.to_a
+      client_id = data[1..2]
+      client_id = client_id.map { |b| b.to_s(16) }.join.hex
+      connection.client_id = client_id
     end
 
     DEVICE_ERROR_MESSAGES = {
@@ -66,7 +83,7 @@ module Chippy
         errors << flag if flag_set?(device_status, bit)
       end
 
-      raise DeviceError.new(errors.join(", ")) unless errors.empty?
+      raise DeviceError.new(errors) unless errors.empty?
     end
   end
 end

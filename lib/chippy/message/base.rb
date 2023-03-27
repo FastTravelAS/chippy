@@ -1,5 +1,7 @@
 module Chippy
   class Message
+    # Message::Base is the base class for all message objects, providing common
+    # functionality and attributes for working with messages.
     class Base
       include MessageHelper
       include MessageConstants

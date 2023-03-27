@@ -1,4 +1,6 @@
 module Chippy
+  # Handshake performs the initial handshake process with a Chippy device,
+  # establishing a connection and configuring the device as needed.
   class Handshake
     include LoggerHelper
 

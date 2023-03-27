@@ -1,6 +1,7 @@
 require "optparse"
 
 module Chippy
+  # CLI is the command-line interface for the application
   class CLI
     DEFAULT_PORT = 44999
     DEFAULT_CONCURRENCY = 10

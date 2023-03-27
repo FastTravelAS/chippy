@@ -1,8 +1,12 @@
 module Chippy
+  # Connection represents a connection to a Chippy device, handling the
+  # sending and receiving of messages over the underlying socket.
   class Connection
     include LoggerHelper
+
     attr_reader :client
     attr_accessor :client_id
+
     def initialize(client, client_id = 0)
       @client = client
       @client_id = client_id
