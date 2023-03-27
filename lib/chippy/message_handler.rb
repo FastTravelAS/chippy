@@ -4,6 +4,7 @@ module Chippy
     CHIP_REGEXP = /020201200e(.*)ffff00000000/
 
     attr_reader :connection
+
     def initialize(connection)
       @connection = connection
     end
@@ -80,7 +81,7 @@ module Chippy
         errors << flag if flag_set?(device_status, bit)
       end
 
-      raise DeviceError.new(errors.join(", ")) unless errors.empty?
+      raise DeviceError.new(errors) unless errors.empty?
     end
   end
 end

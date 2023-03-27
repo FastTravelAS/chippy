@@ -63,7 +63,14 @@ module Chippy
 
   class MessageError < StandardError; end
 
-  class DeviceError < StandardError; end
+  class DeviceError < StandardError
+    attr_reader :errors
+
+    def initialize(errors)
+      @errors = errors
+      super("Device errors: #{errors.join(", ")}")
+    end
+  end
 
   class HandshakeError < StandardError; end
 end

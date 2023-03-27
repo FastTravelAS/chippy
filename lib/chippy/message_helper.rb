@@ -9,7 +9,7 @@ module Chippy
       def normalize(data)
         case data
         when String
-          parse_byte_string(data)
+          parse_string(data)
         when Array
           if data.all?(String)
             hex_string_to_bytes(data.join)
@@ -23,7 +23,7 @@ module Chippy
         end
       end
 
-      def parse_byte_string(str)
+      def parse_string(str)
         if /\A[\da-fA-F]+\z/.match?(str)
           # input string contains only hexadecimal digits
           str.scan(/../).map(&:hex)
@@ -33,20 +33,7 @@ module Chippy
         end
       end
 
-      def binary_string?(str)
-        # Check whether the string includes any non-printable ASCII characters
-        str.each_byte do |b|
-          return true if b < 32 || b > 126
-        end
-        false
-      end
-
-      def binary_string_to_bytes(str)
-        str.bytes
-      end
-
       def hex_string_to_bytes(str)
-        # Convert the hex-encoded string to a binary string, and then to an array of integers
         [str].pack("H*").bytes
       end
     end
