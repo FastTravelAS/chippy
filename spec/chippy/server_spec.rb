@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Chippy::Server do
   let!(:concurrency) { 5 }
-  let!(:port) { 50000 }
+  let!(:port) { 0 }
   let!(:hostname) { "localhost" }
   let!(:server) { described_class.new(port: port, hostname: hostname, concurrency: concurrency) }
   let(:connection) { instance_double(Chippy::Connection, client_id: "test_client_id") }
