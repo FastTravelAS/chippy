@@ -1,6 +1,8 @@
 require "socket"
 
 module Chippy
+  # Server is the main entry point for the application, handling incoming connections
+  # and managing the overall communication with Chippy devices.
   class Server
     include LoggerHelper
 

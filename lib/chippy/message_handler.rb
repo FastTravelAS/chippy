@@ -1,4 +1,6 @@
 module Chippy
+  # MessageHandler is responsible for processing incoming messages
+  # from Chippy devices and taking appropriate actions based on the message type.
   class MessageHandler
     include LoggerHelper
     CHIP_REGEXP = /020201200e(.*)ffff00000000/

@@ -1,4 +1,6 @@
 module Chippy
+  # MessageHelper is a utility module with methods for converting and manipulating
+  # message data in different formats, such as strings, arrays, and byte sequences.
   module MessageHelper
     def self.included(klass)
       klass.extend(ClassMethods)

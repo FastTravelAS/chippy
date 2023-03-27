@@ -17,6 +17,8 @@ require_relative "chippy/redis_producer"
 require_relative "chippy/server"
 require_relative "chippy/version"
 
+# Chippy is the main module containing all the classes and submodules
+# required to handle communication with transceivers (hereby "Chippy device(s)").
 module Chippy
   class << self
     def start(options = {})
@@ -52,6 +54,8 @@ module Chippy
     end
   end
 
+  # MalformedMessageError is a custom error class that represents a message with
+  # incorrect structure or content, making it impossible to process.
   class MalformedMessageError < StandardError
     attr_reader :remaining_data_length
 
@@ -61,8 +65,12 @@ module Chippy
     end
   end
 
+  # MessageError is a custom error class that represents an issue with a message,
+  # such as invalid data or unexpected content.
   class MessageError < StandardError; end
 
+  # DeviceError is a custom error class that represents an error in the Chippy device,
+  # with a specific error message indicating the type of error.
   class DeviceError < StandardError
     attr_reader :errors
 
@@ -72,5 +80,7 @@ module Chippy
     end
   end
 
+  # HandshakeError is a custom error class that represents a problem that occurs
+  # during the handshake process with a Chippy device.
   class HandshakeError < StandardError; end
 end

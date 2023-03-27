@@ -1,4 +1,6 @@
 module Chippy
+  # ConnectionStatus keeps track of the connection status of a Chippy device,
+  # including its client_id, connected_at, and last_seen_at timestamps.
   class ConnectionStatus
     attr_reader :client_id, :last_seen_at, :connected_at
 

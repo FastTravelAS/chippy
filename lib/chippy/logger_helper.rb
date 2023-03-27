@@ -1,6 +1,8 @@
 require "sentry-ruby"
 
 module Chippy
+  # LogWriter is a utility class for writing logs, providing a simple interface
+  # for outputting log messages with tags.
   class LogWriter
     attr_reader :logger
 
@@ -30,6 +32,8 @@ module Chippy
     end
   end
 
+  # LoggerHelper is a utility module that provides helper methods for logging,
+  # simplifying the process of logging messages in other classes.
   module LoggerHelper
     LOG_DIRECTIONS = {
       in: :IN,

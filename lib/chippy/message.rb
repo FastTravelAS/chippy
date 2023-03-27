@@ -2,6 +2,8 @@ require_relative "message_helper"
 require_relative "message_constants"
 
 module Chippy
+  # Message is the base class for creating and parsing messages sent between the
+  # application and Chippy devices.
   class Message
     include MessageHelper
     include MessageConstants

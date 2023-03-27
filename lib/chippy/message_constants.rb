@@ -1,4 +1,6 @@
 module Chippy
+  # MessageConstants is a utility module that provides constants related to messages,
+  # such as message types and other specific values.
   module MessageConstants
     HEADER_SIZE = 4
 

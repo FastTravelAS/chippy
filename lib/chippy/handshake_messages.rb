@@ -1,4 +1,6 @@
 module Chippy
+  # HandshakeMessages is a helper class that provides arrays of byte sequences
+  # representing the various messages used during the handshake process with a Chippy device.
   class HandshakeMessages
     class << self
       def initial

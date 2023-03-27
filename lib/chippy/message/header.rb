@@ -2,6 +2,9 @@ require_relative "base"
 
 module Chippy
   class Message
+    # Message::Header is a utility class for handling the header section of messages,
+    # providing methods for parsing and constructing header data for communication
+    # between the application and Chippy devices.
     class Header < Base
       attr_reader :message_class, :status, :response_status, :message_id, :message_length, :message_name
 
