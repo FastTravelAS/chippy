@@ -13,6 +13,7 @@ module Chippy
 
       begin
         @socket = TCPServer.new(hostname, port)
+        @socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_REUSEADDR, true)
       rescue Errno::EADDRINUSE
         puts "Port #{port} is already in use. Please choose another port."
         exit 1
