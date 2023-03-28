@@ -12,7 +12,7 @@ module Chippy
         port: ENV.fetch("CHIPPY_PORT", DEFAULT_PORT).to_i,
         hostname: ENV.fetch("CHIPPY_HOSTNAME", DEFAULT_HOSTNAME).to_s,
         concurrency: ENV.fetch("CHIPPY_CONCURRENCY", DEFAULT_CONCURRENCY).to_i,
-        redis_url: ENV.fetch("CHIPPY_REDIS_URL", DEFAULT_REDIS_URL).to_s,
+        redis_url: ENV.fetch("REDIS_URL", DEFAULT_REDIS_URL).to_s,
         redis_list: ENV.fetch("CHIPPY_REDIS_LIST", DEFAULT_REDIS_LIST).to_s
       }
     end
