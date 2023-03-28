@@ -7,6 +7,7 @@ steps:
     image: ruby:3.2.1-slim-buster
     commands:
       - bundle install --path /bundle
+      - sleep 15
       - bundle exec rake
     volumes:
       - name: gem-cache
