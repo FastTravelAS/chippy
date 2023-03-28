@@ -6,15 +6,13 @@ steps:
   - name: build
     image: ruby:3.2.1-slim-buster
     commands:
-      - sleep 5
-      - redis-cli -h localhost ping
-      - redis-cli -h localhost set FOO bar
-      - redis-cli -h localhost get FOO
       - bundle install --path /bundle
       - bundle exec rake
     volumes:
       - name: gem-cache
         path: /bundle
+    environment:
+      REDIS_URL: redis://localhost:6379
 
 services:
   - name: redis
