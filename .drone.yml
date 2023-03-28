@@ -4,13 +4,16 @@ name: default
 
 steps:
   - name: build
-    image: ruby:3.2.1
+    image: ruby:3.2.1-slim-buster
     commands:
+      - bundle install --path /bundle
       - bundle exec rake
     volumes:
       - name: gem-cache
         path: /bundle
+    environment:
+      REDIS_URL: redis://redis:6379
 
 services:
   - name: redis
-    image: redis:6.2.5
+    image: redis
