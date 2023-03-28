@@ -1,22 +1,31 @@
+# stdlib
 require "logger"
+require "optparse"
+
+# dependencies
+require "redis"
 require "active_support/tagged_logging"
 require "active_support/isolated_execution_state"
 require "active_support/core_ext/integer"
+require "sentry-ruby"
 
-require_relative "chippy/client/redis_consumer"
-require_relative "chippy/logger_helper"
-require_relative "chippy/cli"
-require_relative "chippy/connection"
-require_relative "chippy/connection_status"
-require_relative "chippy/handshake"
-require_relative "chippy/handshake_messages"
-require_relative "chippy/message"
-require_relative "chippy/message/body"
-require_relative "chippy/message/header"
-require_relative "chippy/message_handler"
-require_relative "chippy/redis_producer"
-require_relative "chippy/server"
-require_relative "chippy/version"
+require "chippy/logger_helper"
+require "chippy/cli"
+require "chippy/connection"
+require "chippy/connection_status"
+require "chippy/handshake"
+require "chippy/handshake_messages"
+require "chippy/message"
+require "chippy/message/body"
+require "chippy/message/header"
+require "chippy/message_handler"
+require "chippy/redis_producer"
+require "chippy/server"
+require "chippy/version"
+
+require "chippy/client/redis_consumer"
+require "chippy/client/railtie" if defined?(Rails)
+
 
 # Chippy is the main module containing all the classes and submodules
 # required to handle communication with transceivers (hereby "Chippy device(s)").

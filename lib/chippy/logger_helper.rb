@@ -1,5 +1,3 @@
-require "sentry-ruby"
-
 module Chippy
   # LogWriter is a utility class for writing logs, providing a simple interface
   # for outputting log messages with tags.
