@@ -73,4 +73,4 @@ Rails.application.config.chippy.message_handler = lambda do |message|
   Rails.logger.debug "Custom handler: Received message #{message}"
 end
 ```
-
+test
