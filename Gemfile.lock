@@ -1,7 +1,15 @@
+PATH
+  remote: .
+  specs:
+    chippy (0.1.0)
+      activesupport (>= 6.0.0)
+      redis (>= 4.2, < 6)
+      sentry-ruby (>= 5.8, < 6)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.4.3)
+    activesupport (7.0.4.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -80,16 +88,14 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  activesupport (~> 7.0)
   brakeman (~> 5.4)
+  chippy!
   rake (~> 13.0)
-  redis (~> 5.0)
   rspec (~> 3.0)
   rubocop (~> 1.44)
   rubocop-performance (~> 1.15)
   rubocop-rake (~> 0.6.0)
   rubocop-rspec (~> 2.18)
-  sentry-ruby (~> 5.8)
   standard (~> 1.24)
   timecop (~> 0.9.6)
 

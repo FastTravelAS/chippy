@@ -1,5 +1,3 @@
-require "optparse"
-
 module Chippy
   # CLI is the command-line interface for the application
   class CLI
