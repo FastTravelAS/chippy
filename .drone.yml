@@ -1,0 +1,14 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: build
+    dockerfile: Dockerfile
+    volumes:
+      - name: gem-cache
+        path: /bundle
+
+services:
+  - name: redis
+    image: redis:6.2.5
