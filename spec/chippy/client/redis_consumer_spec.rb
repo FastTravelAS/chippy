@@ -42,4 +42,19 @@ RSpec.describe Chippy::Client::RedisConsumer do
       end.to output("Received message #{message} on queue #{queue_name}\n").to_stdout
     end
   end
+
+  describe "custom message handler" do
+    it "calls the custom message handler when provided" do
+      custom_handler = lambda do |message|
+        puts "Custom handler: Received message #{message} on queue #{queue_name}\n"
+      end
+
+      consumer = described_class.new(queue_name, &custom_handler)
+
+      message = "test_message"
+      expect do
+        consumer.handle_message(message)
+      end.to output("Custom handler: Received message #{message} on queue #{queue_name}\n").to_stdout
+    end
+  end
 end

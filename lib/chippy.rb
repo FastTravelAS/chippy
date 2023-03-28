@@ -26,7 +26,6 @@ require "chippy/version"
 require "chippy/client/redis_consumer"
 require "chippy/client/railtie" if defined?(Rails)
 
-
 # Chippy is the main module containing all the classes and submodules
 # required to handle communication with transceivers (hereby "Chippy device(s)").
 module Chippy
