@@ -3,6 +3,7 @@ require "active_support/tagged_logging"
 require "active_support/isolated_execution_state"
 require "active_support/core_ext/integer"
 
+require_relative "chippy/client/redis_consumer"
 require_relative "chippy/logger_helper"
 require_relative "chippy/cli"
 require_relative "chippy/connection"

@@ -2,7 +2,7 @@ require "spec_helper"
 require "securerandom"
 
 RSpec.describe Chippy::RedisProducer do
-  let(:queue_name) { "chippy:readings" }
+  let(:queue_name) { "chippy:readings:test" }
   let(:redis_options) { {host: "localhost", port: 6379} }
   let(:producer) { described_class.new(queue_name, redis_options) }
   let(:redis) { Redis.new(redis_options) }
