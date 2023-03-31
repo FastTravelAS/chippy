@@ -36,7 +36,7 @@ module Chippy
     def initialize(header: nil, body: nil, type: :RESPONSE)
       @header = header
       @body = body
-      @created_at = Time.now.utc
+      @created_at = Time.now
       @type = type
     end
 

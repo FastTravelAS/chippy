@@ -9,13 +9,13 @@ module Chippy
     end
 
     def log(message, tags)
-      formatted_message = Chippy.log_formatter.call("info", Time.now.utc, "Chippy", message)
+      formatted_message = Chippy.log_formatter.call("info", Time.now, "Chippy", message)
 
       write_to_log(formatted_message, :info, tags)
     end
 
     def log_error(e, tags)
-      formatted_message = Chippy.log_formatter.call("error", Time.now.utc, "Chippy", e)
+      formatted_message = Chippy.log_formatter.call("error", Time.now, "Chippy", e)
 
       write_to_log(formatted_message, :error, tags)
     end
