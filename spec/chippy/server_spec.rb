@@ -8,7 +8,6 @@ RSpec.describe Chippy::Server do
   let(:connection) { instance_double(Chippy::Connection, client_id: "test_client_id") }
   let(:message_handler) { instance_double(Chippy::MessageHandler) }
   let(:handshake) { instance_double(Chippy::Handshake) }
-  let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 4.hours.ago, last_seen_at: 10.minutes.ago) }
 
   before do
     allow(Chippy::Connection).to receive(:new).and_return(connection)
@@ -17,8 +16,6 @@ RSpec.describe Chippy::Server do
     allow(connection).to receive(:read)
     allow(connection).to receive(:close)
     allow(handshake).to receive(:perform)
-    allow(connection_status).to receive(:touch)
-    server.connections["test_client_id"] = connection_status
   end
 
   after do
@@ -99,7 +96,6 @@ RSpec.describe Chippy::Server do
       # Set up your test server and connection
       server = described_class.new(port: port, concurrency: 1)
       connection = instance_double(Chippy::Connection)
-      server.connections["test_client_id"] = Chippy::ConnectionStatus.new
 
       allow(connection).to receive(:client_id).and_return("test_client_id")
       allow(connection).to receive(:close)
@@ -170,7 +166,7 @@ RSpec.describe Chippy::Server do
       server.handle_connection(connection)
 
       # Check that the read method has been called with the correct remaining data length
-      expect(socket).to have_received(:read).with(7)
+      expect(socket).to have_received(:read).with(7).once
     end
   end
 end
