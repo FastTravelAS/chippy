@@ -14,23 +14,24 @@ module Chippy
 
     def perform
       log "Performing handshake", connection: connection
-      client_id = process_messages(HandshakeMessages.all)
+      client_id = process_messages(HandshakeMessages.initial, break_early: false)
 
       raise HandshakeError, "No beacon ID obtained" unless client_id
 
-      log "Finished handshake", connection: connection
+      process_messages(HandshakeMessages.on)
+      log "Handshake complete for #{client_id}", connection: connection
     end
 
     private
 
-    def process_messages(messages)
+    def process_messages(messages, break_early: true)
       client_id = nil
       messages.each_with_index do |message_data, index|
         message = Message.create(message_data, type: :REQUEST)
         connection.request(message)
 
         # Break out of the loop if it's the last message in the array
-        break if message_data == messages.last
+        break if message_data == messages.last && break_early
 
         response = connection.read
         handler.handle(response) if response

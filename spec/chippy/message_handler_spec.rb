@@ -21,7 +21,7 @@ RSpec.describe Chippy::MessageHandler do
     context "when the message name is :CONNECT_TRANSPONDER_REPORT" do
       it "queues a ReadingJob with the chip, client_id, and created_at" do
         message_handler.handle(message)
-        expect(Chippy.producer).to have_received(:push).with(hash_including(chip: a_kind_of(String), client_id: a_kind_of(Integer), timestamp: a_kind_of(Float)))
+        expect(Chippy.producer).to have_received(:push).with(hash_including(data: a_kind_of(String), client_id: a_kind_of(Integer), timestamp: a_kind_of(Float)))
       end
     end
 

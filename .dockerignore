@@ -1,5 +1,4 @@
 spec/
-*.gemspec
 README.md
 chippy.png
 .rspec_status

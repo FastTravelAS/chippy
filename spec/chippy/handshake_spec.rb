@@ -18,7 +18,7 @@ RSpec.describe Chippy::Handshake do
 
   describe "#perform" do
     it "processes messages correctly" do
-      all_messages = Chippy::HandshakeMessages.all
+      all_messages = Chippy::HandshakeMessages.initial + Chippy::HandshakeMessages.on
 
       request_counter = 0
       read_counter = 0

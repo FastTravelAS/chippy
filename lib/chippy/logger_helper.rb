@@ -15,7 +15,7 @@ module Chippy
     end
 
     def log_error(e, tags)
-      formatted_message = Chippy.log_formatter.call("error", Time.now.utc, "Chippy", e.inspect)
+      formatted_message = Chippy.log_formatter.call("error", Time.now.utc, "Chippy", e)
 
       write_to_log(formatted_message, :error, tags)
     end
@@ -57,6 +57,14 @@ module Chippy
       return nil unless beacon
 
       "Beacon: #{beacon}"
+    end
+  end
+
+  class LogFormatter < Logger::Formatter
+    FORMAT = "[%s #%d] %5s -- %s: %s\n"
+
+    def call(severity, time, progname, msg)
+      sprintf(FORMAT, format_datetime(time), Process.pid, severity, progname, msg2str(msg))
     end
   end
 end

@@ -3,14 +3,19 @@ module Chippy
   # representing the various messages used during the handshake process with a Chippy device.
   class HandshakeMessages
     class << self
-      def all
+      def initial
         [
           operational_mode_non_transaction, # Set operational mode ( non-transaction )
           get_dsrc_configuration, # Get DSRC
-          get_status, # Get transciever status
+          get_status, # Get transceiver status
           set_beacon_time.call, # Set beacon time ( host time )
           *define_applications, # Define applications
           set_extended, # Set extended
+        ]
+      end
+
+      def on
+        [
           operational_mode_transaction # Set operational mode ( transaction )
         ]
       end
