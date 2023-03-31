@@ -56,9 +56,12 @@ module Chippy
       [header.to_a, body.to_a].flatten
     end
 
+    def bytes
+      bytes_to_hex_string(to_a)
+    end
+
     def full_message
-      bytes = to_a.flatten
-      bytes_to_hex_string(bytes)
+      to_a.pack("C*")
     end
 
     def name
@@ -78,12 +81,12 @@ module Chippy
     def inspect
       data = header_attributes.merge(
         {
-          content: full_message,
+          content: bytes,
           created_at: @created_at.to_f
         }
       )
 
-      "Message(id: %{id} - %{klass} - %{name} - status: %{status} - length: %{length} - content: %{content} - created_at: %{created_at})" % data
+      "Message(%{name} - status: %{status} - length: %{length} - content: %{content})" % data
     end
 
     def ==(other)

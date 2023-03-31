@@ -9,14 +9,15 @@ module Chippy
     end
 
     def log(message, tags)
-      if message.is_a? Message
-        message = message.inspect
-      end
-      write_to_log(message, :info, tags)
+      formatted_message = Chippy.log_formatter.call("info", Time.now, "Chippy", message)
+
+      write_to_log(formatted_message, :info, tags)
     end
 
     def log_error(e, tags)
-      write_to_log(e, :error, tags)
+      formatted_message = Chippy.log_formatter.call("error", Time.now, "Chippy", e)
+
+      write_to_log(formatted_message, :error, tags)
     end
 
     private
@@ -40,13 +41,13 @@ module Chippy
 
     def log(message, connection: nil, direction: nil)
       direction_string = LOG_DIRECTIONS.fetch(direction, nil)
-      tags = [pid_string, beacon_string(connection&.client_id), direction_string].compact
+      tags = [beacon_string(connection&.client_id), direction_string].compact
       LogWriter.new(Chippy.logger).log(message, tags)
     end
 
     def log_error(e, connection: nil, notify: false)
       Sentry.capture_exception(e) if notify
-      tags = [pid_string, beacon_string(connection&.client_id)].compact
+      tags = [beacon_string(connection&.client_id)].compact
       LogWriter.new(Chippy.logger).log_error(e, tags)
     end
 
@@ -57,13 +58,13 @@ module Chippy
 
       "Beacon: #{beacon}"
     end
+  end
 
-    def pid
-      Process.pid
-    end
+  class LogFormatter < Logger::Formatter
+    FORMAT = "[%s #%d] %5s -- %s: %s\n"
 
-    def pid_string
-      "PID: #{pid}"
+    def call(severity, time, progname, msg)
+      sprintf(FORMAT, format_datetime(time), Process.pid, severity, progname, msg2str(msg))
     end
   end
 end

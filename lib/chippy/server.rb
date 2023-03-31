@@ -4,12 +4,12 @@ module Chippy
   # Server is the main entry point for the application, handling incoming connections
   # and managing the overall communication with Chippy devices.
   class Server
+    include ErrorHandler
     include LoggerHelper
 
     def initialize(options = {})
       @port, @hostname, @concurrency = options.values_at(:port, :hostname, :concurrency)
       @threads = ThreadGroup.new
-      @connections = {}
 
       begin
         @socket = TCPServer.new(hostname, port)
@@ -20,7 +20,7 @@ module Chippy
       end
     end
 
-    attr_reader :threads, :connections, :socket, :concurrency, :port, :hostname
+    attr_reader :threads, :socket, :concurrency, :port, :hostname
 
     def trap_signals
       trap("INT") { raise Interrupt }
@@ -30,7 +30,11 @@ module Chippy
     def handle_exit
       at_exit do
         log "Shutting down server"
-        threads.list.each(&:kill)
+        threads.list.each do |t|
+          log "Closing connection with #{t[:connection].client_id}" if t[:connection]&.client_id
+          t[:connection]&.close
+          t.kill
+        end
         close
       end
     end
@@ -59,15 +63,10 @@ module Chippy
     def spawn_thread
       Thread.new do
         loop do
+          Thread.current[:handshake_complete] = false
           connection = Connection.new(socket.accept)
-
-          begin
-            handshake = Handshake.new(connection, connections)
-            handshake.perform
-            handle_connection(connection)
-          rescue => e
-            handle_error(e, connection)
-          end
+          Thread.current[:connection] = connection
+          handle_connection(connection)
         end
       end
     end
@@ -77,37 +76,22 @@ module Chippy
 
       # Normal loop
       loop do
+        unless Thread.current[:handshake_complete]
+          log "Will handshake"
+          Handshake.new(connection).perform
+        end
+
         message = connection.read
         if message
           handler.handle(message)
-          connections[connection.client_id].touch
         else
           break
         end
         yield if block_given?
+      rescue => error
+        handle_error(error, connection)
+        break
       end
-    rescue => e
-      handle_error(e, connection)
-    end
-
-    private
-
-    def handle_error(error, connection)
-      should_close_connection = false
-
-      case error
-      when Chippy::MalformedMessageError
-        connection.discard_remaining_data(error.remaining_data_length) if error.remaining_data_length&.positive?
-      when EOFError, Errno::EPIPE, Errno::ECONNRESET
-        should_close_connection = true
-      else
-        # log_error(error, connection: connection, notify: true)
-      end
-
-      # TODO: Remove this when we're ready to go live. Keeping this for now to help with debugging.
-      log_error(error, connection: connection, notify: true)
-
-      connection.close if should_close_connection
     end
   end
 end

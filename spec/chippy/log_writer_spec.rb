@@ -12,12 +12,12 @@ RSpec.describe Chippy::LogWriter do
       message = "test message"
       tags = %w[tag1 tag2]
       allow(mock_logger).to receive(:tagged).with(tags).and_return(mock_logger)
-      allow(mock_logger).to receive(:info).with(message)
+      allow(mock_logger).to receive(:info).with(/test message/)
 
       described_class.new(mock_logger).log(message, tags)
 
       expect(mock_logger).to have_received(:tagged).with(tags)
-      expect(mock_logger).to have_received(:info).with(message)
+      expect(mock_logger).to have_received(:info).with(/test message/)
     end
   end
 
@@ -26,12 +26,12 @@ RSpec.describe Chippy::LogWriter do
       error = StandardError.new("test error")
       tags = %w[tag1 tag2]
       allow(mock_logger).to receive(:tagged).with(tags).and_return(mock_logger)
-      allow(mock_logger).to receive(:error).with(error)
+      allow(mock_logger).to receive(:error).with(/test error/)
 
       described_class.new(mock_logger).log_error(error, tags)
 
       expect(mock_logger).to have_received(:tagged).with(tags)
-      expect(mock_logger).to have_received(:error).with(error)
+      expect(mock_logger).to have_received(:error).with(/test error/)
     end
   end
 end

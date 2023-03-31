@@ -5,9 +5,9 @@ module Chippy
 
       initializer "chippy.configure" do |app|
         Chippy::Client::RedisConsumer.configure do |config|
-          config.queue_name = app.config.chippy.queue_name || "chippy:readings"
-          config.enabled = app.config.chippy.enabled || false
-          config.message_handler = app.config.chippy.message_handler
+          config.queue_name = app.config.chippy[:queue_name] || "chippy:readings"
+          config.enabled = app.config.chippy[:enabled] || false
+          config.message_handler = app.config.chippy[:message_handler]
         end
       end
 

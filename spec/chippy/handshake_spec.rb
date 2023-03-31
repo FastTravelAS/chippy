@@ -1,10 +1,9 @@
 require "spec_helper"
 
 RSpec.describe Chippy::Handshake do
-  subject(:handshake) { described_class.new(connection, connections, handler: message_handler) }
+  subject(:handshake) { described_class.new(connection, handler: message_handler) }
 
   let(:connection) { instance_double(Chippy::Connection) }
-  let(:connections) { {} }
   let(:message_handler) { instance_double(Chippy::MessageHandler) }
 
   before do
@@ -19,9 +18,7 @@ RSpec.describe Chippy::Handshake do
 
   describe "#perform" do
     it "processes messages correctly" do
-      all_messages = Chippy::HandshakeMessages.initial +
-        Chippy::HandshakeMessages.configure +
-        Chippy::HandshakeMessages.enable
+      all_messages = Chippy::HandshakeMessages.initial + Chippy::HandshakeMessages.on
 
       request_counter = 0
       read_counter = 0
@@ -41,33 +38,12 @@ RSpec.describe Chippy::Handshake do
       handshake.perform
 
       # Subtract 3 because we skip the last read of each handshake category
-      expect(message_handler).to have_received(:handle).exactly(all_messages.count - 3).times
+      expect(message_handler).to have_received(:handle).exactly(all_messages.count - 1).times
       expect(request_counter).to eq(all_messages.count)
-      expect(read_counter).to eq(all_messages.count - 3)
-    end
-  end
-
-  context "when connections already holds a client_id" do
-    let(:connections) { {"test_client_id" => connection_status} }
-
-    describe "and it's more than an hour old" do
-      let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 4.hours.ago, last_seen_at: 2.hours.ago) }
-
-      it "performs a full handshake" do
-        allow(connection_status).to receive(:connect).with("test_client_id").once
-        allow(connection_status).to receive(:touch).once
-        allow(connection).to receive(:request)
-        allow(connection).to receive(:read)
-        allow(Chippy::HandshakeMessages).to receive(:configure).and_call_original
-
-        handshake.perform
-
-        expect(Chippy::HandshakeMessages).to have_received(:configure).once
-      end
+      expect(read_counter).to eq(all_messages.count - 1)
     end
 
     describe "and a client_id is not obtained" do
-      let(:connection_status) { instance_double(Chippy::ConnectionStatus, connected_at: 30.minutes.ago) }
 
       before { allow(connection).to receive(:client_id).and_return(nil) }
 

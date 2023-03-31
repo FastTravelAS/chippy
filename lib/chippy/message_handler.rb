@@ -3,8 +3,6 @@ module Chippy
   # from Chippy devices and taking appropriate actions based on the message type.
   class MessageHandler
     include LoggerHelper
-    CHIP_REGEXP = /020201200e(.*)ffff00000000/
-
     attr_reader :connection
 
     def initialize(connection)
@@ -35,10 +33,9 @@ module Chippy
 
     def handle_connect_transponder_report(message)
       data = message.body.to_s
-      chip = data.match(CHIP_REGEXP)[1]
 
       payload = {
-        chip: chip,
+        data: data,
         client_id: connection.client_id,
         timestamp: message.created_at.to_f
       }
@@ -83,7 +80,7 @@ module Chippy
         errors << flag if flag_set?(device_status, bit)
       end
 
-      raise DeviceError.new(errors) unless errors.empty?
+      raise DeviceError.new(errors, connection.client_id) unless errors.empty?
     end
   end
 end

@@ -12,7 +12,7 @@ require "sentry-ruby"
 require "chippy/logger_helper"
 require "chippy/cli"
 require "chippy/connection"
-require "chippy/connection_status"
+require "chippy/error_handler"
 require "chippy/handshake"
 require "chippy/handshake_messages"
 require "chippy/message"
@@ -46,6 +46,10 @@ module Chippy
       @logger ||= ActiveSupport::TaggedLogging.new(::Logger.new($stdout)).tap do |logger|
         logger.tagged("Chippy")
       end
+    end
+
+    def log_formatter
+      @log_formatter ||= Chippy::LogFormatter.new
     end
 
     def setup_producer(list_name, redis_options = {})
@@ -83,9 +87,9 @@ module Chippy
   class DeviceError < StandardError
     attr_reader :errors
 
-    def initialize(errors)
+    def initialize(errors, client_id)
       @errors = errors
-      super("Device errors: #{errors.join(", ")}")
+      super("[client_id: #{client_id}] Device errors: #{errors.join(", ")}")
     end
   end
 

@@ -7,19 +7,14 @@ module Chippy
         [
           operational_mode_non_transaction, # Set operational mode ( non-transaction )
           get_dsrc_configuration, # Get DSRC
-          get_status # Get transciever status
-        ]
-      end
-
-      def configure
-        [
+          get_status, # Get transceiver status
           set_beacon_time.call, # Set beacon time ( host time )
           *define_applications, # Define applications
-          set_extended # Set extended
+          set_extended, # Set extended
         ]
       end
 
-      def enable
+      def on
         [
           operational_mode_transaction # Set operational mode ( transaction )
         ]
