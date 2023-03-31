@@ -86,7 +86,7 @@ module Chippy
         }
       )
 
-      "Message(id: %{id} - %{klass} - %{name} - status: %{status} - length: %{length} - content: %{content} - created_at: %{created_at})" % data
+      "Message(%{name} - status: %{status} - length: %{length} - content: %{content})" % data
     end
 
     def ==(other)

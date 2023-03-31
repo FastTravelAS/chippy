@@ -120,7 +120,7 @@ RSpec.describe Chippy::Message do
 
     describe "#inspect" do
       it "returns pertinent information about the message" do
-        expect(message.inspect).to eq "Message(id: 23 - DEVICE_REPORT - CONNECT_TRANSPONDER_REPORT - status: OK - length: 1 - content: 0200170101 - created_at: #{time.to_f})"
+        expect(message.inspect).to eq "Message(CONNECT_TRANSPONDER_REPORT - status: OK - length: 1 - content: 0200170101)"
       end
     end
 

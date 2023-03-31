@@ -48,6 +48,10 @@ module Chippy
       end
     end
 
+    def log_formatter
+      @log_formatter ||= Logger::Formatter.new
+    end
+
     def setup_producer(list_name, redis_options = {})
       @producer = RedisProducer.new(list_name, redis_options)
     end

@@ -9,14 +9,15 @@ module Chippy
     end
 
     def log(message, tags)
-      if message.is_a? Message
-        message = message.inspect
-      end
-      write_to_log(message, :info, tags)
+      formatted_message = Chippy.log_formatter.call("info", Time.now.utc, "Chippy", message)
+
+      write_to_log(formatted_message, :info, tags)
     end
 
     def log_error(e, tags)
-      write_to_log(e, :error, tags)
+      formatted_message = Chippy.log_formatter.call("error", Time.now.utc, "Chippy", e.inspect)
+
+      write_to_log(formatted_message, :error, tags)
     end
 
     private
@@ -40,13 +41,13 @@ module Chippy
 
     def log(message, connection: nil, direction: nil)
       direction_string = LOG_DIRECTIONS.fetch(direction, nil)
-      tags = [pid_string, beacon_string(connection&.client_id), direction_string].compact
+      tags = [beacon_string(connection&.client_id), direction_string].compact
       LogWriter.new(Chippy.logger).log(message, tags)
     end
 
     def log_error(e, connection: nil, notify: false)
       Sentry.capture_exception(e) if notify
-      tags = [pid_string, beacon_string(connection&.client_id)].compact
+      tags = [beacon_string(connection&.client_id)].compact
       LogWriter.new(Chippy.logger).log_error(e, tags)
     end
 
@@ -56,14 +57,6 @@ module Chippy
       return nil unless beacon
 
       "Beacon: #{beacon}"
-    end
-
-    def pid
-      Process.pid
-    end
-
-    def pid_string
-      "PID: #{pid}"
     end
   end
 end
