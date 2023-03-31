@@ -78,8 +78,8 @@ RSpec.describe Chippy::Message do
     end
 
     describe "#to_s" do
-      it "returns whole payload as string" do
-        expect(message.full_message).to eq "00000001ff"
+      it "returns whole payload" do
+        expect(message.full_message).to eq "\x00\x00\x00\x01\xFF".force_encoding("ASCII-8BIT")
       end
     end
   end
@@ -143,7 +143,7 @@ RSpec.describe Chippy::Message do
         data = "0200"
         message = described_class.create(data, type: :REQUEST)
         expect(message.header.message_id).to eq 2
-        expect(message.header.status).to be_nil
+        expect(message.header.status).to eq :OK
       end
     end
   end

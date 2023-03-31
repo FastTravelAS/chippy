@@ -22,6 +22,8 @@ module Chippy
           @message_id = data[2]
           @message_length = data[3]
         elsif type == :REQUEST
+          @message_class = :REQUEST
+          @status = :OK
           @message_name = MESSAGE_IDS.fetch(data[0])
           @message_id = data[0]
           @message_length = data[1]
