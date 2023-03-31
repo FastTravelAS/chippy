@@ -39,7 +39,7 @@ RSpec.describe Chippy::MessageHandler do
       let(:body) { [0, 0, 0, 32] }
 
       it "raises a DeviceError with the error message" do
-        expect { message_handler.handle(message) }.to raise_error(Chippy::DeviceError, "Device errors: ERROR_INTERNAL_VOLTAGE")
+        expect { message_handler.handle(message) }.to raise_error(Chippy::DeviceError, "[client_id: 1] Device errors: ERROR_INTERNAL_VOLTAGE")
       end
     end
 

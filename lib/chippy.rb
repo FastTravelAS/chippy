@@ -83,9 +83,9 @@ module Chippy
   class DeviceError < StandardError
     attr_reader :errors
 
-    def initialize(errors)
+    def initialize(errors, client_id)
       @errors = errors
-      super("Device errors: #{errors.join(", ")}")
+      super("[client_id: #{client_id}] Device errors: #{errors.join(", ")}")
     end
   end
 

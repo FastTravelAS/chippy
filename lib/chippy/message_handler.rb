@@ -83,7 +83,7 @@ module Chippy
         errors << flag if flag_set?(device_status, bit)
       end
 
-      raise DeviceError.new(errors) unless errors.empty?
+      raise DeviceError.new(errors, connection.client_id) unless errors.empty?
     end
   end
 end
