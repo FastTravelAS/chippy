@@ -32,7 +32,8 @@ COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /app /app
 
 # Add application user
-RUN useradd chippy --home /app --shell /bin/bash
+RUN useradd chippy --home /app --shell /bin/bash && \
+    chown -R chippy:chippy log
 USER chippy:chippy
 
 # Set the entry point for the container
