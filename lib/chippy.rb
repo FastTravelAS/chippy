@@ -43,7 +43,13 @@ module Chippy
     attr_reader :producer
 
     def logger
-      @logger ||= ActiveSupport::TaggedLogging.new(::Logger.new($stdout)).tap do |logger|
+      logger = if ENV["CHIPPY_LOG_TO_STDOUT"] == "true"
+        Logger.new($stdout)
+      else
+        Logger.new("log/chippy.#{ENV.fetch("CHIPPY_ENV", "development")}.log")
+      end
+
+      @logger ||= ActiveSupport::TaggedLogging.new(logger).tap do |logger|
         logger.tagged("Chippy")
       end
     end
