@@ -60,8 +60,8 @@ module Chippy
       redis_test = Redis.new(url: redis_url)
       begin
         redis_test.ping
-      rescue Redis::CannotConnectError
-        puts "Cannot connect to Redis at '#{redis_url}'. Please check your Redis connection string."
+      rescue Redis::CannotConnectError => e
+        puts "Cannot connect to Redis at '#{redis_url}'. Please check your Redis connection string. #{e.message}}"
         exit 1
       end
     end
