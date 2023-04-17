@@ -8,7 +8,7 @@ COPY . .
 
 # Set production environment
 ENV TZ="Europe/Oslo"
-ENV RUBY_ENV="production" \
+ENV CHIPPY_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test"

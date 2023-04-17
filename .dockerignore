@@ -4,3 +4,6 @@ chippy.png
 .rspec_status
 .rspec
 .rubocop.yml
+# Ignore all logfiles
+/log/*
+!/log/.keep
