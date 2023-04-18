@@ -29,6 +29,11 @@ module Chippy
           @message_length = data[1]
         end
       rescue KeyError
+        Sentry.configure_scope do |scope|
+          scope.set_context(
+            "message", **data
+          )
+        end
         raise MessageError
       end
     end

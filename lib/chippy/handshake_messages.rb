@@ -10,7 +10,7 @@ module Chippy
           get_status, # Get transceiver status
           set_beacon_time.call, # Set beacon time ( host time )
           *define_applications, # Define applications
-          set_extended, # Set extended
+          set_extended # Set extended
         ]
       end
 
