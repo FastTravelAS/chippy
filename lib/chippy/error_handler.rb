@@ -8,7 +8,8 @@ module Chippy
         #   log_error(error, connection: connection, notify: true)
         should_close_connection = false
       when Chippy::MalformedMessageError
-        connection.discard_remaining_data(error.remaining_data_length) if error.remaining_data_length&.positive?
+        remaining_data = connection.discard_remaining_data(error.remaining_data_length) if error.remaining_data_length&.positive?
+        Sentry.capture_exception(error, extra: {remaining_data: remaining_data, length: error.remaining_data_length})
       when EOFError, Errno::EPIPE, Errno::ECONNRESET, IOError, Chippy::HandshakeError
         should_close_connection = true
       else

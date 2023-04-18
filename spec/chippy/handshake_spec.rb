@@ -44,7 +44,6 @@ RSpec.describe Chippy::Handshake do
     end
 
     describe "and a client_id is not obtained" do
-
       before { allow(connection).to receive(:client_id).and_return(nil) }
 
       it "raises an exception" do

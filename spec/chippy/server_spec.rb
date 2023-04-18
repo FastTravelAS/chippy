@@ -169,4 +169,18 @@ RSpec.describe Chippy::Server do
       expect(socket).to have_received(:read).with(7).once
     end
   end
+
+  describe "IOError" do
+    let(:socket) { instance_double(UNIXSocket) }
+    let(:connection) { Chippy::Connection.new(socket, "test_client_id") }
+
+    it "logs the error" do
+      allow(connection).to receive(:read).and_raise(IOError)
+      allow(server).to receive(:log_error)
+
+      server.handle_connection(connection)
+
+      expect(server).to have_received(:log_error)
+    end
+  end
 end

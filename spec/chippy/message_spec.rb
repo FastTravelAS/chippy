@@ -82,6 +82,12 @@ RSpec.describe Chippy::Message do
         expect(message.full_message).to eq "\x00\x00\x00\x01\xFF".force_encoding("ASCII-8BIT")
       end
     end
+
+    describe "#to_h" do
+      it "returns the message data in hash" do
+        expect(message.to_h).to include({content: "00000001ff", created_at: a_kind_of(Float), full_message: "\x00\x00\x00\x01\xFF".force_encoding("ASCII-8BIT"), id: 0, klass: :KEEP_ALIVE, length: 1, name: :KEEP_ALIVE, status: :OK})
+      end
+    end
   end
 
   context "with message methods" do

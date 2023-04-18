@@ -38,6 +38,12 @@ module Chippy
       @body = body
       @created_at = Time.now
       @type = type
+
+      Sentry.configure_scope do |scope|
+        scope.set_context(
+          "message", **to_h
+        )
+      end
     end
 
     def valid?
@@ -54,6 +60,14 @@ module Chippy
 
     def to_a
       [header.to_a, body.to_a].flatten
+    end
+
+    def to_h
+      header_attributes.merge(
+        full_message: full_message,
+        content: bytes,
+        created_at: @created_at.to_f
+      )
     end
 
     def bytes

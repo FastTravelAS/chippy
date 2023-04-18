@@ -28,7 +28,7 @@ module Chippy
       body = Message::Body.parse(data)
       message = Message.new(header: header, body: body)
 
-      raise Chippy::MalformedMessageError.new(remaining_data_length: remaining_data_length) unless message.ok?
+      raise Chippy::MalformedMessageError.new(message, remaining_data_length: remaining_data_length) unless message.ok?
 
       message
     end
