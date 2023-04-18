@@ -11,12 +11,14 @@ module Chippy
         end
       end
 
-      config.after_initialize do |app|
-        if Chippy::Client::RedisConsumer.enabled
-          Chippy::Client::RedisConsumer.new(
-            Chippy::Client::RedisConsumer.queue_name,
-            &Chippy::Client::RedisConsumer.message_handler
-          ).listen
+      config.after_initialize do |_app|
+        unless defined?(Rails::Console) || File.basename($0) == "rake"
+          if Chippy::Client::RedisConsumer.enabled
+            Chippy::Client::RedisConsumer.new(
+              Chippy::Client::RedisConsumer.queue_name,
+              &Chippy::Client::RedisConsumer.message_handler
+            ).listen
+          end
         end
       end
     end
