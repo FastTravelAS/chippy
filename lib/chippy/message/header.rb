@@ -31,7 +31,7 @@ module Chippy
       rescue KeyError
         Sentry.configure_scope do |scope|
           scope.set_context(
-            "message", **data
+            "header", message_class: message_class, status: status, message_id: message_id, message_length: message_length, message_name: message_name
           )
         end
         raise MessageError
