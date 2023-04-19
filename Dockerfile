@@ -36,8 +36,5 @@ RUN useradd chippy --home /app --shell /bin/bash && \
     chown -R chippy:chippy log
 USER chippy:chippy
 
-# forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /app/log/chippy.production.log
-
 # Set the entry point for the container
 ENTRYPOINT ["bin/start"]
