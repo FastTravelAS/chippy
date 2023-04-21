@@ -4,6 +4,7 @@ RSpec.describe Chippy::MessageHandler do
   subject(:message_handler) { described_class.new(connection) }
 
   let(:connection) { instance_double(Chippy::Connection) }
+  let(:redis) { instance_double(Redis) }
 
   describe "#handle" do
     let(:message) { instance_double(Chippy::Message, name: name, body: body, created_at: Time.now) }
@@ -28,9 +29,15 @@ RSpec.describe Chippy::MessageHandler do
     context "when the message name is :KEEP_ALIVE" do
       let(:name) { :KEEP_ALIVE }
 
+      before do
+        allow(Chippy).to receive(:redis).and_return(redis)
+        allow(Chippy.redis).to receive(:hset)
+      end
+
       it "sends a keepalive request" do
         message_handler.handle(message)
         expect(connection).to have_received(:request).with(an_instance_of(Chippy::Message))
+        expect(Chippy.redis).to have_received(:hset).with("chippy:last_keep_alive", 1, a_kind_of(Integer))
       end
     end
 
