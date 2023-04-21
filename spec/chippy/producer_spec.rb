@@ -1,9 +1,9 @@
 require "spec_helper"
 require "securerandom"
 
-RSpec.describe Chippy::RedisProducer do
+RSpec.describe Chippy::Producer do
   let(:queue_name) { "chippy:readings:test" }
-  let(:producer) { described_class.new(queue_name) }
+  let(:producer) { described_class.new(queue_name, redis) }
   let(:redis) { Redis.new }
 
   before do

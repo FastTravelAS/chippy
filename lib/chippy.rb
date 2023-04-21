@@ -19,7 +19,7 @@ require "chippy/message"
 require "chippy/message/body"
 require "chippy/message/header"
 require "chippy/message_handler"
-require "chippy/redis_producer"
+require "chippy/producer"
 require "chippy/server"
 require "chippy/version"
 
@@ -35,11 +35,13 @@ module Chippy
 
       test_redis_connection(redis_url)
 
-      Chippy.setup_producer(redis_list, url: redis_url)
+      setup_redis(url: redis_url)
+      setup_producer(redis_list)
       Chippy::Server.new(port: port, hostname: hostname, concurrency: concurrency).run
     end
 
     attr_writer :logger
+    attr_reader :redis
     attr_reader :producer
 
     def logger
@@ -58,8 +60,12 @@ module Chippy
       @log_formatter ||= Chippy::LogFormatter.new
     end
 
-    def setup_producer(list_name, redis_options = {})
-      @producer = RedisProducer.new(list_name, redis_options)
+    def setup_redis(redis_options = {})
+      @redis = Redis.new(redis_options)
+    end
+
+    def setup_producer(list_name, redis = @redis)
+      @producer = Producer.new(list_name, redis)
     end
 
     def test_redis_connection(redis_url)

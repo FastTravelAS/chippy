@@ -43,8 +43,9 @@ module Chippy
       Chippy.producer.push(payload)
     end
 
-    def handle_keep_alive(message)
+    def handle_keep_alive(_message)
       keep_alive_message = Message.create([0x00, 0x00], type: :REQUEST)
+      Chippy.redis.hset("chippy:last_keep_alive", connection.client_id, Time.now.to_i)
       connection.request(keep_alive_message)
     end
 
