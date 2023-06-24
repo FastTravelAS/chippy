@@ -28,14 +28,14 @@ module Chippy
       client_id = nil
       messages.each_with_index do |message_data, index|
         message = Message.create(message_data, type: :REQUEST)
-        log "Sending message #{messages.name}"
+        log "Sending message #{message.name}"
         connection.request(message)
 
         # Break out of the loop if it's the last message in the array
         break if message_data == messages.last && break_early
 
         response = connection.read
-        puts "Response: #{response.inspect}" if response
+        log "Response: #{response.inspect}" if response
         handler.handle(response) if response
 
         client_id ||= connection.client_id.presence

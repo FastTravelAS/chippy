@@ -6,6 +6,8 @@ module Chippy
     # providing methods for parsing and constructing header data for communication
     # between the application and Chippy devices.
     class Header < Base
+      include LoggerHelper
+
       attr_reader :message_class, :status, :response_status, :message_id, :message_length, :message_name
 
       def self.parse(data, options = {})
@@ -15,6 +17,8 @@ module Chippy
       end
 
       def parse
+        log "Parsing header with: #{data.inspect}"
+
         if type == :RESPONSE
           @message_class = MESSAGE_CLASSES.fetch(data[0])
           @status = MESSAGE_RESPONSE_STATUS.fetch(data[1])
@@ -31,7 +35,7 @@ module Chippy
       rescue KeyError
         Sentry.configure_scope do |scope|
           scope.set_context(
-            "header", message_class: message_class, status: status, message_id: message_id, message_length: message_length, message_name: message_name
+            "header", data: data, message_class: message_class, status: status, message_id: message_id, message_length: message_length, message_name: message_name
           )
         end
         raise MessageError
