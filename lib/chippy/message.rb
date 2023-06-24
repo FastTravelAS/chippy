@@ -38,12 +38,6 @@ module Chippy
       @body = body
       @created_at = Time.now
       @type = type
-
-      Sentry.configure_scope do |scope|
-        scope.set_context(
-          "message", **to_h
-        )
-      end
     end
 
     def valid?

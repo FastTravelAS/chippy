@@ -33,12 +33,7 @@ module Chippy
           @message_length = data[1]
         end
       rescue KeyError
-        Sentry.configure_scope do |scope|
-          scope.set_context(
-            "header", data: data, message_class: message_class, status: status, message_id: message_id, message_length: message_length, message_name: message_name
-          )
-        end
-        raise MessageError
+        raise MessageError.new(data: data, message_class: message_class, status: status, message_id: message_id, message_length: message_length, message_name: message_name)
       end
     end
   end

@@ -92,7 +92,14 @@ module Chippy
 
   # MessageError is a custom error class that represents an issue with a message,
   # such as invalid data or unexpected content.
-  class MessageError < StandardError; end
+  class MessageError < StandardError
+    attr_reader :data
+
+    def initialize(data = {})
+      super
+      @data = data
+    end
+  end
 
   # DeviceError is a custom error class that represents an error in the Chippy device,
   # with a specific error message indicating the type of error.

@@ -12,6 +12,11 @@ module Chippy
         Sentry.capture_exception(error, extra: {remaining_data: remaining_data, length: error.remaining_data_length})
       when EOFError, Errno::EPIPE, Errno::ECONNRESET, IOError, Chippy::HandshakeError
         should_close_connection = true
+      when Chippy::MessageError
+        Sentry.configure_scope do |scope|
+          scope.set_context("raw message", **error.data)
+        end
+        should_close_connection = false
       else
         should_close_connection = true
         # log_error(error, connection: connection, notify: true)
