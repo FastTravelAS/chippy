@@ -67,5 +67,32 @@ RSpec.describe Chippy::MessageHandler do
         expect { message_handler.handle(message) }.not_to raise_error
       end
     end
+
+    context "when the message is GET_STATUS with HOST_COMM_ERROR" do
+      let(:body) { "0100030400000004" }
+      let(:message) { Chippy::Message.create(body) }
+
+      it "does not raise a DeviceError" do
+        expect { message_handler.handle(message) }.not_to raise_error
+      end
+    end
+
+    context "when the message is GET_STATUS with DEVICE_REBOOTED" do
+      let(:body) { "0100030400000008" }
+      let(:message) { Chippy::Message.create(body) }
+
+      it "does not raise a DeviceError" do
+        expect { message_handler.handle(message) }.not_to raise_error
+      end
+    end
+
+    context "when the message is GET_STATUS with other errors" do
+      let(:body) { "0100030400000020" }
+      let(:message) { Chippy::Message.create(body) }
+
+      it "raises a DeviceError with the error message" do
+        expect { message_handler.handle(message) }.to raise_error(Chippy::DeviceError, "[client_id: 1] Device errors: ERROR_INTERNAL_VOLTAGE")
+      end
+    end
   end
 end

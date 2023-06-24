@@ -70,6 +70,11 @@ module Chippy
       LOW_VOLTAGE_CLOCK_BATTERY: 64
     }
 
+    IGNORED_DEVICE_ERRORS = [
+      :HOST_COMM_ERROR,
+      :DEVICE_REBOOTED
+    ]
+
     def flag_set?(bitmask, flag)
       (bitmask & flag) == flag
     end
@@ -80,6 +85,8 @@ module Chippy
       DEVICE_ERROR_MESSAGES.each do |flag, bit|
         errors << flag if flag_set?(device_status, bit)
       end
+
+      errors -= IGNORED_DEVICE_ERRORS
 
       raise DeviceError.new(errors, connection.client_id) unless errors.empty?
     end

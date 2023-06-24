@@ -55,7 +55,7 @@ module Chippy
     def ok?
       return false unless valid?
 
-      header.status == :OK
+      [:OK, :TIMEOUT_ERROR].include?(header.status)
     end
 
     def to_a

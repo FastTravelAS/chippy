@@ -157,11 +157,16 @@ RSpec.describe Chippy::Message do
   context "when doing message validation" do
     let(:valid_message) { described_class.create(%w[02 00 17 01 01]) }
     let(:invalid_message) { described_class.create(%w[02 00 17 01 01 01]) }
+    let(:timeout_message) { described_class.create(%w[01 13 01 00]) }
     let(:not_ok_message) { described_class.create(%w[02 11 17 01]) }
 
     describe "#ok?" do
       it "returns true when ok?" do
         expect(valid_message).to be_ok
+      end
+
+      it "returns true when timeout_error" do
+        expect(timeout_message).to be_ok
       end
 
       it "returns false if missing body" do
