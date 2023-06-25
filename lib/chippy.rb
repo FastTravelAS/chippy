@@ -14,13 +14,14 @@ require "chippy/cli"
 require "chippy/connection"
 require "chippy/error_handler"
 require "chippy/handshake"
-require "chippy/handshake_messages"
+require "chippy/messages"
 require "chippy/message"
 require "chippy/message/body"
 require "chippy/message/header"
 require "chippy/message_handler"
 require "chippy/producer"
 require "chippy/server"
+require "chippy/status"
 require "chippy/version"
 
 require "chippy/client/redis_consumer"
@@ -37,6 +38,7 @@ module Chippy
 
       setup_redis(url: redis_url)
       setup_producer(redis_list)
+
       Chippy::Server.new(port: port, hostname: hostname, concurrency: concurrency).run
     end
 
@@ -45,7 +47,7 @@ module Chippy
     attr_reader :producer
 
     def logger
-      logger = if ENV["CHIPPY_LOG_TO_STDOUT"] == "true"
+      logger = if ENV["CHIPPY_LOG_TO_STDOUT"] == "true" || ENV["CHIPPY_ENV"] == "test"
         Logger.new($stdout)
       else
         Logger.new("log/chippy.#{ENV.fetch("CHIPPY_ENV", "development")}.log")
@@ -66,6 +68,10 @@ module Chippy
 
     def setup_producer(list_name, redis = @redis)
       @producer = Producer.new(list_name, redis)
+    end
+
+    def status
+      @status ||= Status.new(Process.pid)
     end
 
     def test_redis_connection(redis_url)

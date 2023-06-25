@@ -4,8 +4,14 @@ module Chippy
   class Connection
     include LoggerHelper
 
+    OPERATIONAL_MODES = {
+      0 => :NON_TRANSACTION_MODE,
+      1 => :TRANSACTION_MODE
+    }
+
     attr_reader :client
     attr_accessor :client_id
+    attr_reader :operational_mode
 
     def initialize(client, client_id = 0)
       @client = client
@@ -60,6 +66,15 @@ module Chippy
 
       # Read and discard the remaining data
       client.read(remaining_data_length)
+    end
+
+    def operational_mode=(mode)
+      log "Setting operational mode to #{mode}"
+      @operational_mode = OPERATIONAL_MODES[mode]
+    end
+
+    def in_transaction_mode?
+      operational_mode == :TRANSACTION_MODE
     end
   end
 end

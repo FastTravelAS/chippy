@@ -1,27 +1,8 @@
 module Chippy
-  # HandshakeMessages is a helper class that provides arrays of byte sequences
+  # Messages is a helper class that provides arrays of byte sequences
   # representing the various messages used during the handshake process with a Chippy device.
-  class HandshakeMessages
+  class Messages
     class << self
-      def initial
-        [
-          operational_mode_non_transaction, # Set operational mode ( non-transaction )
-          get_dsrc_configuration, # Get DSRC
-          get_status, # Get transceiver status
-          set_beacon_time.call, # Set beacon time ( host time )
-          *define_applications, # Define applications
-          set_extended # Set extended
-        ]
-      end
-
-      def on
-        [
-          operational_mode_transaction # Set operational mode ( transaction )
-        ]
-      end
-
-      private
-
       def operational_mode_non_transaction
         [0x01, 0x01, 0x00]
       end
@@ -32,6 +13,10 @@ module Chippy
 
       def set_beacon_time
         -> { [0x0a, 0x04, *(Time.now.to_i.to_s(16).scan(/../).map { |x| x.to_i(16) })] }
+      end
+
+      def get_operational_mode
+        [0x02, 0x00]
       end
 
       def operational_mode_transaction
