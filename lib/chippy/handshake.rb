@@ -15,6 +15,7 @@ module Chippy
 
     def perform
       log "Performing handshake", connection: connection
+      connection.operational_mode = :UNKNOWN
 
       process_message(
         message: Message.create(Messages.operational_mode_non_transaction, type: :REQUEST),
@@ -74,6 +75,11 @@ module Chippy
         message: Message.create(Messages.get_operational_mode, type: :REQUEST),
         on_max_attempts: -> { raise HandshakeError, "Failed query for operational mode" }
       )
+
+      if connection.operational_mode == :TRANSACTION
+        Chippy.redis.set("chippy:#{client_id}:operational_mode", "TRANSACTION")
+        Chippy.redis.set("chippy:#{client_id}:operational_at", Time.now.to_i)
+      end
 
       Thread.current[:handshake_complete] = true
       Chippy.status.set_status_online
