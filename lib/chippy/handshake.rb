@@ -21,7 +21,7 @@ module Chippy
         retry_on: :TIMEOUT_ERROR,
         retry_interval: 5,
         max_attempts: 3,
-        on_max_attempts: -> { raise HandshakeError, "Failed to set non-transaction mode" }
+        on_max_attempts: -> { reset_beacon }
       )
 
       process_message(
@@ -67,7 +67,7 @@ module Chippy
         retry_on: :TIMEOUT_ERROR,
         retry_interval: 5,
         max_attempts: 3,
-        on_max_attempts: -> { raise HandshakeError, "Failed to set transaction mode" }
+        on_max_attempts: -> { reset_beacon }
       )
 
       process_message(
@@ -148,6 +148,11 @@ module Chippy
       end
 
       result
+    end
+
+    def reset_beacon
+      process_message(message: Chippy::Message.create(Chippy::Messages.reset_beacon, type: :REQUEST))
+      raise TimeoutError, "Device unresponsive, attempting reset"
     end
   end
 end

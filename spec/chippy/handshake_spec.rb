@@ -96,12 +96,16 @@ RSpec.describe Chippy::Handshake do
         expect(connection).to have_received(:read).exactly(expected_responses.count).times
       end
 
-      it "raises an exception" do
+      it "attempts to reset beacon" do
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with("CHIPPY_TRX_USER").and_return("hello")
+        allow(ENV).to receive(:fetch).with("CHIPPY_TRX_PASSWORD").and_return("world")
+
         expected_responses[0] = Chippy::Message.create([0x01, 0x13, 0x01, 0x00], type: :RESPONSE) # TIMEOUT_ERROR
         allow(connection).to receive(:read).and_return(*expected_responses)
         allow(connection).to receive(:close)
 
-        expect { handshake.perform }.to raise_error(Chippy::HandshakeError, "Failed to set non-transaction mode")
+        expect { handshake.perform }.to raise_error(Chippy::TimeoutError, "Device unresponsive, attempting reset")
       end
 
       it "saves any messages not expected and process them later" do

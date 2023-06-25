@@ -121,4 +121,6 @@ module Chippy
   # HandshakeError is a custom error class that represents a problem that occurs
   # during the handshake process with a Chippy device.
   class HandshakeError < StandardError; end
+
+  class TimeoutError < StandardError; end
 end

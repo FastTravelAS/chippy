@@ -63,6 +63,25 @@ module Chippy
             0] # NoOfAttributes
         end
       end
+
+      def reset_beacon
+        [0x28, 0x40, *format_string(ENV.fetch("CHIPPY_TRX_USER")), *format_string(ENV.fetch("CHIPPY_TRX_PASSWORD"))]
+      end
+
+      private
+
+      def format_string(str)
+        # Truncate the string to 31 characters
+        str = str[0...31]
+
+        # Encode it as ASCII and convert to bytes
+        bytes = str.bytes
+
+        # Pad it to 32 characters with null characters (ASCII zero)
+        bytes.fill(0, bytes.length...32)
+
+        bytes
+      end
     end
   end
 end
