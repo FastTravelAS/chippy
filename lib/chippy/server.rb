@@ -30,6 +30,7 @@ module Chippy
     def handle_exit
       at_exit do
         log "Shutting down server"
+        Chippy.status.set_status_offline
         threads.list.each do |t|
           log "Closing connection with #{t[:connection].client_id}" if t[:connection]&.client_id
           t[:connection]&.close
@@ -44,6 +45,8 @@ module Chippy
       handle_exit
 
       log "Started chip reader server on #{hostname}:#{port}"
+
+      Chippy.status.set_status_online
 
       Thread.abort_on_exception = true
 

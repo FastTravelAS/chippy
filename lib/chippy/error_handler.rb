@@ -10,7 +10,7 @@ module Chippy
       when Chippy::MalformedMessageError
         remaining_data = connection.discard_remaining_data(error.remaining_data_length) if error.remaining_data_length&.positive?
         Sentry.capture_exception(error, extra: {remaining_data: remaining_data, length: error.remaining_data_length})
-      when EOFError, Errno::EPIPE, Errno::ECONNRESET, IOError, Chippy::HandshakeError
+      when EOFError, Errno::EPIPE, Errno::ECONNRESET, IOError
         should_close_connection = true
       when Chippy::MessageError
         Sentry.configure_scope do |scope|

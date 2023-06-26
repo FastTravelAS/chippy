@@ -14,6 +14,8 @@ module Chippy
       name = message.name
 
       case name
+      when :GET_OPERATIONAL_MODE
+        handle_get_operational_mode(message)
       when :CONNECT_TRANSPONDER_REPORT
         handle_connect_transponder_report(message)
       when :KEEP_ALIVE
@@ -59,6 +61,7 @@ module Chippy
       client_id = data[1..2]
       client_id = client_id.map { |b| b.to_s(16) }.join.hex
       connection.client_id = client_id
+      client_id
     end
 
     DEVICE_ERROR_MESSAGES = {
@@ -89,6 +92,14 @@ module Chippy
       errors -= IGNORED_DEVICE_ERRORS
 
       raise DeviceError.new(errors, connection.client_id) unless errors.empty?
+    end
+
+    def handle_get_operational_mode(message)
+      data = message.body.to_a
+      operational_mode = data[0]
+      connection.operational_mode = operational_mode
+      Chippy.status.set_client_status(connection.client_id, connection.operational_mode)
+      operational_mode
     end
   end
 end
