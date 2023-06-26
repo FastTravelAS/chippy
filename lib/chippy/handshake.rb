@@ -76,8 +76,8 @@ module Chippy
         on_max_attempts: -> { raise HandshakeError, "Failed query for operational mode" }
       )
 
-      Chippy.redis.set("chippy:#{client_id}:operational_mode", connection.operational_mode)
-      Chippy.redis.set("chippy:#{client_id}:operational_at", Time.now.to_i)
+      Chippy.redis.set("chippy:operational_mode:#{client_id}", connection.operational_mode)
+      Chippy.redis.set("chippy:operational_at:#{client_id}", Time.now.to_i)
 
       Thread.current[:handshake_complete] = true
       Chippy.status.set_status_online
