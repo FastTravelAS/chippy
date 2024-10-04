@@ -9,9 +9,9 @@ module Chippy
         yield self
       end
 
-      def initialize(queue_name = nil, &block)
+      def initialize(queue_name = nil, redis = nil, &block)
         @queue_name = queue_name || self.class.queue_name
-        @redis = Redis.new
+        @redis = redis || Redis.new
         @message_handler = block || self.class.message_handler
       end
 
@@ -22,6 +22,8 @@ module Chippy
             _, message = @redis.blpop(@queue_name, timeout: 0)
 
             handle_message(message)
+          rescue => error
+            Sentry.capture_exception(error)
           end
         end
       end
