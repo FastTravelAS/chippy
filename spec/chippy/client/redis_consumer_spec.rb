@@ -1,13 +1,10 @@
 require "spec_helper"
+require "mock_redis"
 
 RSpec.describe Chippy::Client::RedisConsumer do
   let(:queue_name) { "test_queue" }
-  let(:redis) { Redis.new }
-  let(:consumer) { described_class.new(queue_name) }
-
-  before do
-    redis.flushdb # Clear the Redis database before each test
-  end
+  let(:redis) { MockRedis.new }
+  let(:consumer) { described_class.new(queue_name, redis) }
 
   describe "#initialize" do
     it "sets the queue name" do
@@ -15,7 +12,7 @@ RSpec.describe Chippy::Client::RedisConsumer do
     end
 
     it "initializes a Redis instance" do
-      expect(consumer.instance_variable_get(:@redis)).to be_a(Redis)
+      expect(consumer.instance_variable_get(:@redis)).to be_a(MockRedis)
     end
   end
 
@@ -31,6 +28,28 @@ RSpec.describe Chippy::Client::RedisConsumer do
       listener.kill # Kill the listener thread after processing the message
 
       expect(consumer).to have_received(:handle_message).with(message)
+    end
+
+    it "will not crash the thread if an exception is thrown" do
+      message = "test_message"
+      redis.rpush(queue_name, message)
+
+      allow(consumer).to receive(:handle_message).with(message)
+      allow(redis).to receive(:blpop).and_raise(StandardError)
+
+      listener = consumer.listen
+      sleep 0.2
+
+      expect(consumer).not_to have_received(:handle_message).with(message)
+
+      # Restore the original method
+      allow(redis).to receive(:blpop).and_call_original
+
+      sleep 0.2
+
+      expect(consumer).to have_received(:handle_message).with(message)
+
+      listener.kill
     end
   end
 

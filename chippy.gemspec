@@ -20,5 +20,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rubocop-performance", "~> 1.15"
   s.add_development_dependency "rubocop-rake", "~> 0.6.0"
   s.add_development_dependency "timecop", "~> 0.9.6"
+  s.add_development_dependency "mock_redis", "~> 0.45.0"
   s.files = Dir["lib/**/*", "README.md", "CHANGELOG.md", "chippy.png"]
 end

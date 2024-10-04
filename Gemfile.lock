@@ -24,6 +24,7 @@ GEM
     json (2.6.3)
     language_server-protocol (3.17.0.3)
     minitest (5.18.0)
+    mock_redis (0.45.0)
     parallel (1.22.1)
     parser (3.2.1.0)
       ast (~> 2.4.1)
@@ -90,6 +91,7 @@ PLATFORMS
 DEPENDENCIES
   brakeman (~> 5.4)
   chippy!
+  mock_redis (~> 0.45.0)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.44)
