@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", ">= 6.0.0"
   s.add_dependency "redis", ">= 4.2", "< 6"
   s.add_dependency "sentry-ruby", ">= 5.8", "< 6"
+  s.add_dependency "bigdecimal"
+  s.add_dependency "base64"
   s.add_development_dependency "rspec", "~> 3.0"
   s.add_development_dependency "rubocop", "~> 1.44"
   s.add_development_dependency "standard", "~> 1.24"
