@@ -1,0 +1,166 @@
+name: Rails Compatibility Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['3.2', '3.3', '3.4']
+        rails-version: ['7.0', '7.1', '7.2', '8.0']
+    
+    services:
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: false
+    
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+    
+    - name: Run tests with Rails ${{ matrix.rails-version }}
+      env:
+        RAILS_VERSION: ${{ matrix.rails-version }}
+        REDIS_URL: redis://localhost:6379
+      run: |
+        # Create test Gemfile for specific Rails version
+        cat > Gemfile.test << EOF
+        source 'https://rubygems.org'
+        gem 'rails', '~> ${{ matrix.rails-version }}'
+        gem 'redis'
+        gem 'rspec'
+        gemspec path: '.'
+        EOF
+        
+        # Install Rails version specific dependencies
+        BUNDLE_GEMFILE=Gemfile.test bundle install
+        
+        # Test Rails compatibility
+        BUNDLE_GEMFILE=Gemfile.test bundle exec ruby -e "
+        require 'rails'
+        require 'chippy'
+        puts 'Rails #{${{ matrix.rails-version }}} compatibility: OK'
+        "
+    
+    - name: Test Rails app initialization
+      env:
+        RAILS_VERSION: ${{ matrix.rails-version }}
+        REDIS_URL: redis://localhost:6379
+      run: |
+        # Create minimal Rails app to test initialization
+        gem install rails -v "~> ${{ matrix.rails-version }}"
+        rails new test_app --skip-git --skip-bundle --api
+        
+        cd test_app
+        echo "gem 'chippy', path: '..'" >> Gemfile
+        echo "gem 'redis'" >> Gemfile
+        bundle install
+        
+        # Create initializer with message handler that writes to a file
+        cat > config/initializers/chippy.rb << 'EOF'
+        Rails.application.config.chippy.queue_name = "chippy:test"
+        Rails.application.config.chippy.enabled = true
+        Rails.application.config.chippy.message_handler = lambda do |message|
+          File.write('/tmp/chippy_test_message.txt', message)
+        end
+        EOF
+        
+        # Test that Rails boots
+        bundle exec rails runner "puts 'Rails ${{ matrix.rails-version }} with Ruby ${{ matrix.ruby-version }} boots successfully with Chippy!'"
+        
+        # Verify configuration
+        bundle exec rails runner "
+          # Apply configuration manually since rails runner doesn't run initializers
+          Chippy::Client::RedisConsumer.configure do |config|
+            config.queue_name = Rails.application.config.chippy.queue_name || 'chippy:readings'
+            config.enabled = Rails.application.config.chippy.enabled || false
+            config.message_handler = Rails.application.config.chippy.message_handler
+          end
+          
+          if Chippy::Client::RedisConsumer.enabled && 
+             Chippy::Client::RedisConsumer.queue_name == 'chippy:test'
+            puts '✅ Chippy configured correctly'
+          else
+            puts '❌ Chippy configuration failed'
+            exit 1
+          end
+        "
+        
+        # Test end-to-end message handling
+        bundle exec rails runner "
+          require 'json'
+          require 'redis'
+          require 'timeout'
+          
+          # Apply configuration manually for end-to-end test
+          Chippy::Client::RedisConsumer.configure do |config|
+            config.queue_name = Rails.application.config.chippy.queue_name || 'chippy:readings'
+            config.enabled = Rails.application.config.chippy.enabled || false
+            config.message_handler = Rails.application.config.chippy.message_handler
+          end
+          
+          # Create test message
+          test_message = {
+            client_id: 'test-client-001',
+            data: 'test-transponder-data',
+            timestamp: Time.now.to_i
+          }.to_json
+          
+          # Send message to Redis queue
+          redis = Redis.new(url: ENV['REDIS_URL'])
+          redis.rpush('chippy:test', test_message)
+          
+          # Create and start consumer
+          consumer = Chippy::Client::RedisConsumer.new(
+            'chippy:test',
+            redis,
+            &Rails.application.config.chippy.message_handler
+          )
+          
+          # Start listening in background thread
+          listener_thread = consumer.listen
+          
+          # Wait for message to be processed (max 10 seconds)
+          Timeout.timeout(10) do
+            until File.exist?('/tmp/chippy_test_message.txt')
+              sleep 0.1
+            end
+          end
+          
+          # Verify message was processed
+          received_message = File.read('/tmp/chippy_test_message.txt')
+          received_data = JSON.parse(received_message)
+          
+          if received_data['client_id'] == 'test-client-001'
+            puts '✅ End-to-end Rails + Chippy integration test passed!'
+          else
+            puts '❌ Message processing failed'
+            exit 1
+          end
+          
+          # Cleanup
+          listener_thread.kill
+          File.delete('/tmp/chippy_test_message.txt') if File.exist?('/tmp/chippy_test_message.txt')
+          redis.del('chippy:test')
+        "

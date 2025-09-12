@@ -10,6 +10,7 @@ Chippy is a standalone Ruby service designed to simplify the process of communic
 - Multi-threaded server architecture for efficient handling of multiple connections.
 - Handshake protocol implementation for seamless device communication.
 - Error handling and logging to ensure reliable operation.
+- Continuous integration with GitHub Actions testing across Ruby versions and Rails compatibility.
 
 ## Prerequisites
 

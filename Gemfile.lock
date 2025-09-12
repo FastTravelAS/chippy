@@ -3,6 +3,8 @@ PATH
   specs:
     chippy (0.1.0)
       activesupport (>= 6.0.0)
+      base64
+      bigdecimal
       redis (>= 4.2, < 6)
       sentry-ruby (>= 5.8, < 6)
 
@@ -15,6 +17,8 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
     ast (2.4.2)
+    base64 (0.3.0)
+    bigdecimal (3.2.3)
     brakeman (5.4.1)
     concurrent-ruby (1.2.2)
     connection_pool (2.3.0)
@@ -86,6 +90,7 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-22
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
